@@ -5,6 +5,10 @@
         <ksession name="rulesSession" />
     </kbase>
 
+    <kbase name="nightclub_discount_rules" packages="rules.nightclubDiscount">
+        <ksession name="discountSession" />
+    </kbase>
+
     <kbase name="Loan_rules" packages="rules.loan">
         <ksession name="loanRulesSession" />
     </kbase>

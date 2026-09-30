@@ -7,6 +7,8 @@ import org.kie.api.builder.KieModule;
 import org.kie.api.builder.Message;
 import org.kie.api.event.rule.AfterMatchFiredEvent;
 import org.kie.api.event.rule.DefaultAgendaEventListener;
+import org.kie.api.event.rule.MatchCancelledEvent;
+import org.kie.api.event.rule.MatchCreatedEvent;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieContainer;
@@ -45,12 +47,12 @@ public class RuleService {
             kieSession.addEventListener(new DefaultAgendaEventListener() {
 
                 @Override
-                public void matchCreated(org.kie.api.event.rule.MatchCreatedEvent event) {
+                public void matchCreated(MatchCreatedEvent event) {
                     log.info("MATCH CREATED: {}", event.getMatch().getRule().getName());
                 }
 
                 @Override
-                public void matchCancelled(org.kie.api.event.rule.MatchCancelledEvent event) {
+                public void matchCancelled(MatchCancelledEvent event) {
                     log.info("MATCH CANCELLED: {}", event.getMatch().getRule().getName());
                 }
 
@@ -109,12 +111,12 @@ public class RuleService {
             kieSession.addEventListener(new DefaultAgendaEventListener() {
 
                 @Override
-                public void matchCreated(org.kie.api.event.rule.MatchCreatedEvent event) {
+                public void matchCreated(MatchCreatedEvent event) {
                     log.info("MATCH CREATED: {}", event.getMatch().getRule().getName());
                 }
 
                 @Override
-                public void matchCancelled(org.kie.api.event.rule.MatchCancelledEvent event) {
+                public void matchCancelled(MatchCancelledEvent event) {
                     log.info("MATCH CANCELLED: {}", event.getMatch().getRule().getName());
                 }
 

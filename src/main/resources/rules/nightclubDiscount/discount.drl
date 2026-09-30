@@ -1,0 +1,22 @@
+package rules.nightclubDiscount;
+
+import com.example.hclai.drools_play_ground.model.GuestData;
+import com.example.hclai.drools_play_ground.model.GuestResult;
+
+rule "isIllegalAge"
+    dialect "mvel"
+    when
+        $gd: GuestData( age < 18 )
+        $gr: GuestResult( result == false )
+    then
+        modify ($gr) { result = true, finalPrice = 0B, kickout = true}
+end
+
+rule "isFemale"
+    dialect "mvel"
+    when
+        $gd: GuestData( gender == "female")
+        $gr: GuestResult( result == false )
+    then
+        modify ($gr) { result = true, finalPrice = 0B }
+end
