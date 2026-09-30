@@ -1,0 +1,200 @@
+package rules.loan;
+
+import com.example.hclai.drools_play_ground.model.LoanApplication;
+import com.example.hclai.drools_play_ground.model.LoanResult;
+import com.example.hclai.drools_play_ground.enums.RiskLevelEnum;
+import com.example.hclai.drools_play_ground.enums.EmploymentTypeEnum;
+
+/**
+ * 硬性拒絕條件:
+ *  1. 申請人年齡未滿 20 歲
+ *  2. 有不良信用紀錄
+ *  3. 信用分數過低 (信用分數 < 400)
+ *  4. 負債比過高 (負債比 > 22 倍)
+ */
+rule "rejectUnderAge"
+    dialect "mvel"
+    salience 103
+    activation-group "hardReject"
+    no-loop true
+when
+    $la: LoanApplication( age < 20 )
+    $lr: LoanResult( approved == true )
+then
+    modify($lr) { approved = false, rejectReason = "低於貸款申請法定年齡 20 歲" }
+end
+
+rule "rejectBadRecord"
+    dialect "mvel"
+    salience 102
+    activation-group "hardReject"
+    no-loop true
+when
+    $la: LoanApplication( hasBadRecord == true )
+    $lr: LoanResult( approved == true )
+then
+    modify($lr) { approved = false, rejectReason = "有不良信用紀錄" }
+end
+
+rule "rejectLowCreditScore"
+    dialect "mvel"
+    salience 101
+    activation-group "hardReject"
+    no-loop true
+when
+    $la: LoanApplication( creditScore < 400 )
+    $lr: LoanResult( approved == true )
+then
+    modify($lr) { approved = false, rejectReason = "信用分數過低" }
+end
+
+rule "rejectHighDebtRatio"
+    dialect "mvel"
+    salience 100
+    activation-group "hardReject"
+    no-loop true
+when
+    $la: LoanApplication( monthlyIncome > 0B, existingDebt / monthlyIncome > 22B )
+    $lr: LoanResult( approved == true )
+then
+    modify($lr) { approved = false, rejectReason = "負債比已超過 22 倍; " }
+end
+
+
+/*
+ * 決定風險等級:
+ * 1. 高風險: 負債比 >= 16 倍 或 信用分數 < 500
+ * 2. 中風險: 負債比 >= 8 倍 且 < 16 倍 或 信用分數 < 700 且 >= 500
+ * 3. 低風險: 負債比 < 8 倍 且 信用分數 >= 700
+ */
+rule "setHighRisk"
+    dialect "mvel"
+    salience 92
+    activation-group "riskLevel"
+    no-loop true
+when
+    $la: LoanApplication( ( monthlyIncome > 0B && existingDebt / monthlyIncome >= 16B ) || ( creditScore < 500 ) )
+    $lr: LoanResult( approved == true)
+then
+    modify($lr) { riskLevel = RiskLevelEnum.HIGH }
+end
+
+rule "setMediumRisk"
+    dialect "mvel"
+    salience 91
+    activation-group "riskLevel"
+    no-loop true
+when
+    $la: LoanApplication(
+        ( monthlyIncome > 0B && existingDebt / monthlyIncome >= 8B && existingDebt / monthlyIncome < 16B ) ||
+        ( creditScore < 700 && creditScore >= 500 )
+     )
+    $lr: LoanResult( approved == true )
+then
+    modify($lr) { riskLevel = RiskLevelEnum.MEDIUM }
+end
+
+rule "setLowRisk"
+    dialect "mvel"
+    salience 90
+    activation-group "riskLevel"
+    no-loop true
+when
+    $la: LoanApplication( monthlyIncome > 0B, existingDebt / monthlyIncome < 8B, creditScore >= 700 )
+    $lr: LoanResult( approved == true )
+then
+    modify($lr) { riskLevel = RiskLevelEnum.LOW }
+end
+
+/*
+ * 計算核准金額:
+ * 1. 全職: 核准金額 = 申請金額 或 月收入 * 60 取其低
+ * 2. 兼職: 核准金額 = 申請金額 或 月收入 * 24 取其低
+ * 3. 自營: 核准金額 = 申請金額 或 月收入 * 36 取其低
+ */
+rule "calculateApprovedAmountFulltime"
+    dialect "mvel"
+    salience 82
+    activation-group "calculateApprovedAmount"
+    no-loop true
+when
+    $la: LoanApplication(
+        employmentType == EmploymentTypeEnum.FULLTIME,
+        $income: monthlyIncome,
+        $request: requestAmount
+    )
+    $lr: LoanResult( approved == true )
+then
+    modify($lr) { approvedAmount = $request.min($income * 60B) }
+end
+
+rule "calculateApprovedAmountParttime"
+    dialect "mvel"
+    salience 81
+    activation-group "calculateApprovedAmount"
+    no-loop true
+when
+    $la: LoanApplication(
+        employmentType == EmploymentTypeEnum.PARTTIME,
+        $income: monthlyIncome,
+        $request: requestAmount
+    )
+    $lr: LoanResult( approved == true )
+then
+    modify($lr) { approvedAmount = $request.min($income * 24B) }
+end
+
+rule "calculateApprovedAmountSelfEmployed"
+    dialect "mvel"
+    salience 80
+    activation-group "calculateApprovedAmount"
+    no-loop true
+when
+    $la: LoanApplication(
+        employmentType == EmploymentTypeEnum.SELF_EMPLOYED,
+        $income: monthlyIncome,
+        $request: requestAmount
+    )
+    $lr: LoanResult( approved == true )
+then
+    modify($lr) { approvedAmount = $request.min($income * 36B) }
+end
+
+/*
+ * 計算利率:
+ * 1. 高風險: 6.5%
+ * 2. 中風險: 4.5%
+ * 3. 低風險: 2.5%
+ */
+rule "rateForHighRisk"
+    dialect "mvel"
+    salience 72
+    activation-group "calculateInterestRate"
+    no-loop true
+when
+    $lr: LoanResult( approved == true, riskLevel == RiskLevelEnum.HIGH )
+then
+    modify($lr) { interestRate = 0.065B }
+end
+
+rule "rateForMediumRisk"
+    dialect "mvel"
+    salience 71
+    activation-group "calculateInterestRate"
+    no-loop true
+when
+    $lr: LoanResult( approved == true, riskLevel == RiskLevelEnum.MEDIUM )
+then
+    modify($lr) { interestRate = 0.045B }
+end
+
+rule "rateForLowRisk"
+    dialect "mvel"
+    salience 70
+    activation-group "calculateInterestRate"
+    no-loop true
+when
+    $lr: LoanResult( approved == true, riskLevel == RiskLevelEnum.LOW )
+then
+    modify($lr) { interestRate = 0.025B }
+end

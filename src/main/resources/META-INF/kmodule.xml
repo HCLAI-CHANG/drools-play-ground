@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kmodule xmlns="http://www.drools.org/xsd/kmodule">
+
+    <kbase name="Product1_rules" packages="rules.product1">
+        <ksession name="rulesSession" />
+    </kbase>
+
+    <kbase name="Loan_rules" packages="rules.loan">
+        <ksession name="loanRulesSession" />
+    </kbase>
+
+</kmodule>
