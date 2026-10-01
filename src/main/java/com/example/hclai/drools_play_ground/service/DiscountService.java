@@ -23,8 +23,10 @@ public class DiscountService {
 
     public GuestResult fireRule(GuestData data) {
 
+        // Step 1: 給 kieContainer 指定的 session name 以取得 kieSession
         KieSession kieSession = kieContainer.newKieSession("discountSession");
 
+        // Step 2: 初始化 result fact
         GuestResult result = new GuestResult();
         result.setName(data.getName());
         result.setResult(false);
@@ -33,6 +35,7 @@ public class DiscountService {
 
         try {
 
+            // 設定監聽器，與邏輯無關
              kieSession.getKieBase().getKiePackages().forEach(kpkg ->
                 kpkg.getRules().forEach(rule -> log.info("LOADED RULE: package={}, name={}", kpkg.getName(), rule.getName()) )
             );
@@ -56,20 +59,22 @@ public class DiscountService {
 
             });
 
+            // Step 3: 將 request fact 及 result fact 都放入 kieSession
             kieSession.insert(data);
             kieSession.insert(result);
 
+            // Step 4: 執行規則判斷
             kieSession.fireAllRules();
 
         } finally {
+
+            // Step 5: 釋放資源
             kieSession.dispose();
         }
 
+        // Step 6: 此時 result fact 已被更新，回傳給 controllser
         return result;
 
     }
-
-
-
 
 }

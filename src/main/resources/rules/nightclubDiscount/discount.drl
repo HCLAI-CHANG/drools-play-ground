@@ -3,6 +3,10 @@ package rules.nightclubDiscount;
 import com.example.hclai.drools_play_ground.model.GuestData;
 import com.example.hclai.drools_play_ground.model.GuestResult;
 
+/*
+ * 規則一: 是否成年
+ * 若年齡小於 18 歲，給我滾出去
+ */
 rule "isIllegalAge"
     dialect "mvel"
     when
@@ -12,6 +16,10 @@ rule "isIllegalAge"
         modify ($gr) { result = true, finalPrice = 0B, kickout = true}
 end
 
+/*
+ * 規則二: 是否是女性
+ * 若為女性，免入場費
+ */
 rule "isFemale"
     dialect "mvel"
     when
