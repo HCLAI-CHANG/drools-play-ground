@@ -82,7 +82,7 @@ public class DiscountService {
     public GuestResult fireExcelRule(GuestData data) {
 
         // Step 1: 給 kieContainer 指定的 session name 以取得 kieSession
-        KieSession kieSession = kieContainer.newKieSession("excelDiscountSession");
+        KieSession kieSession = kieContainer.newKieSession("xlsDiscountSession");
 
         // Step 2: 初始化 result fact
         GuestResult result = new GuestResult();

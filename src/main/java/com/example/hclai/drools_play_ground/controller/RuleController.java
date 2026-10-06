@@ -9,11 +9,8 @@ import com.example.hclai.drools_play_ground.model.GuestData;
 import com.example.hclai.drools_play_ground.model.GuestResult;
 import com.example.hclai.drools_play_ground.model.LoanApplication;
 import com.example.hclai.drools_play_ground.model.LoanResult;
-import com.example.hclai.drools_play_ground.model.RuleResult;
-import com.example.hclai.drools_play_ground.model.UserData;
 import com.example.hclai.drools_play_ground.service.DiscountService;
 import com.example.hclai.drools_play_ground.service.LoanRuleService;
-import com.example.hclai.drools_play_ground.service.RuleService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class RuleController {
-
-    private final RuleService ruleService;
 
     private final LoanRuleService loanRuleService;
 
@@ -46,24 +41,6 @@ public class RuleController {
         log.info("run fireRule, user: {}", data.getName());
 
         return discountService.fireExcelRule(data);
-
-    }
-
-    @PostMapping("/rule")
-    public RuleResult fireRule(@Valid @RequestBody UserData data) {
-
-        log.info("run fireRule, user: {}", data.getName());
-
-        return ruleService.fireRule(data);
-
-    }
-
-    @PostMapping("/xlsRule")
-    public RuleResult fireXlsRule(@Valid @RequestBody UserData data) {
-
-        log.info("run fireXlsRule, user: {}", data.getName());
-
-        return ruleService.fireExcelRule(data);
 
     }
 
