@@ -40,6 +40,15 @@ public class RuleController {
 
     }
 
+    @PostMapping("/xlsDiscountRule")
+    public GuestResult fireXlsRule(@Valid @RequestBody GuestData data) {
+
+        log.info("run fireRule, user: {}", data.getName());
+
+        return discountService.fireExcelRule(data);
+
+    }
+
     @PostMapping("/rule")
     public RuleResult fireRule(@Valid @RequestBody UserData data) {
 

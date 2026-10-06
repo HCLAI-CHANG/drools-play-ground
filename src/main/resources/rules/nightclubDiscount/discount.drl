@@ -11,9 +11,9 @@ rule "isIllegalAge"
     dialect "mvel"
     when
         $gd: GuestData( age < 18 )
-        $gr: GuestResult( result == false )
+        $gr: GuestResult( kickout == false )
     then
-        modify ($gr) { result = true, finalPrice = 0B, kickout = true}
+        modify ($gr) { finalPrice = 0B, kickout = true}
 end
 
 /*
@@ -23,8 +23,11 @@ end
 rule "isFemale"
     dialect "mvel"
     when
-        $gd: GuestData( gender == "female")
-        $gr: GuestResult( result == false )
+        $gd: GuestData(
+            gender == "female",
+            $price: price
+        )
+        $gr: GuestResult( kickout == false )
     then
-        modify ($gr) { result = true, finalPrice = 0B }
+        modify ($gr) { finalPrice = $price * 0B }
 end

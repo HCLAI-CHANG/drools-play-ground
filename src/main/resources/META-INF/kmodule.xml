@@ -1,12 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <kmodule xmlns="http://www.drools.org/xsd/kmodule">
 
-    <kbase name="Product1_rules" packages="rules.product1">
+    <kbase name="product1_rules" packages="rules.product1">
         <ksession name="rulesSession" />
+    </kbase>
+
+    <kbase name="excel_product1_rules" packages="rules.eproduct1">
+        <ksession name="excelRulesSession" />
     </kbase>
 
     <kbase name="nightclub_discount_rules" packages="rules.nightclubDiscount">
         <ksession name="discountSession" />
+    </kbase>
+
+    <kbase name="excel_nightclub_discount_rules" packages="rules.eNightclubDiscount">
+        <ksession name="excelDiscountSession" />
     </kbase>
 
     <kbase name="Loan_rules" packages="rules.loan">

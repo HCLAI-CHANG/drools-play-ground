@@ -9,8 +9,6 @@ public class GuestResult {
 
     private String name;
 
-    private boolean result;
-
     private BigDecimal finalPrice;
 
     private boolean kickout;
