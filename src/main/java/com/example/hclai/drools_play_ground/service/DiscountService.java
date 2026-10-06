@@ -21,6 +21,9 @@ public class DiscountService {
 
     private final KieContainer kieContainer;
 
+    // 現在的寫法還是 request 進來時才編譯 kieBase，10.0.0 已經支援用 kjar 先編譯好在啟動程式了，研究一下怎麼搞，看起來是會動到整個專案，
+    // 因為要有一個獨立的 package 或路徑去專門為 .drl 或 .xlsx 進行編譯
+
     public GuestResult fireRule(GuestData data) {
 
         // Step 1: 給 kieContainer 指定的 session name 以取得 kieSession
