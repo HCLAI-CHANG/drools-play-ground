@@ -35,12 +35,12 @@ public class RuleController {
 
     }
 
-    @PostMapping("/xlsDiscountRule")
-    public GuestResult fireXlsRule(@Valid @RequestBody GuestData data) {
+    @PostMapping("/xlsxDiscountRule")
+    public GuestResult fireXlsxRule(@Valid @RequestBody GuestData data) {
 
         log.info("run fireRule, user: {}", data.getName());
 
-        return discountService.fireExcelRule(data);
+        return discountService.fireXlsxRule(data);
 
     }
 
@@ -53,12 +53,12 @@ public class RuleController {
 
     }
 
-    @PostMapping("/xlsLoanRule")
-    public LoanResult fireXlsLoanRule(@Valid @RequestBody LoanApplication application) {
+    @PostMapping("/xlsxLoanRule")
+    public LoanResult fireXlsxLoanRule(@Valid @RequestBody LoanApplication application) {
 
         log.info("run fireXlsLoanRule, id: {}, name: {}", application.getId(), application.getName());
 
-        return loanRuleService.fireExcelRule(application);
+        return loanRuleService.fireXlsxRule(application);
 
     }
 

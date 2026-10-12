@@ -5,12 +5,16 @@
         <ksession name="discountSession" />
     </kbase>
 
-    <kbase name="excel_nightclub_discount_rules" packages="rules.eNightclubDiscount">
-        <ksession name="xlsDiscountSession" />
+    <kbase name="xlsx_nightclub_discount_rules" packages="rules.eNightclubDiscount">
+        <ksession name="xlsxDiscountSession" />
     </kbase>
 
-    <kbase name="Loan_rules" packages="rules.loan">
+    <kbase name="loan_rules" packages="rules.loan">
         <ksession name="loanRulesSession" />
+    </kbase>
+
+    <kbase name="xlsx_loan_rules" packages="rules.eLoan">
+        <ksession name="xlsxLoanRulesSession" />
     </kbase>
 
 </kmodule>
